@@ -71,24 +71,23 @@ app.controller('RewardsController', [
 	($scope, $log, $rewards, $emoji) => {
 		$scope.emoji = $emoji;
 		$scope.fetchRewards = () => {
-			$scope.newReward = null;
 			$rewards.getAll().then((rewards) => {
-				$scope.newReward = angular.copy($rewards.reward({name: 'New Reward'}));
 				$scope.rewards = rewards.data;
 			});
 		};
-
 		$scope.fetchRewards();
+		$scope.redeem = (reward) => $rewards.redeem(reward);
 	}
 ]);
 
 app.directive('rewardCard', () => ({
 		controller: [
-			'$log', '$scope', 'rewardsService', 'configService',
-			($log, $scope, $rewards, $config) => {
+			'$log', '$scope', '$element', 'rewardsService', 'configService',
+			($log, $scope, $element, $rewards, $config) => {
 				$scope.config = $config;
 				$scope.updating = false;
 				$scope.uploading = false;
+				$scope.isAdmin = typeof $element.attr('is-admin') !== 'undefined';
 
 				if (!$scope.reward || $scope.isNew) {
 					$scope.reward = $rewards.reward({
